@@ -44,8 +44,8 @@
     <rect>
      <x>550</x>
      <y>470</y>
-     <width>341</width>
-     <height>28</height>
+     <width>221</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -110,6 +110,25 @@ border-radius:8px;</string>
    </property>
    <property name="styleSheet">
     <string notr="true">font:12pt;</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="delButton">
+   <property name="geometry">
+    <rect>
+     <x>780</x>
+     <y>470</y>
+     <width>111</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-radius:10px;
+background-color: #01BFFF;
+color:white;
+font:11pt;</string>
+   </property>
+   <property name="text">
+    <string>Delete</string>
    </property>
   </widget>
  </widget>

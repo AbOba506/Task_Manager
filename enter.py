@@ -1,5 +1,6 @@
+import sqlite3
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from main import Window
 from PyQt5.QtWidgets import QApplication
 import sys
@@ -14,11 +15,38 @@ def enter():
     def insert_row():
         login = login_entry.get()
         password = password_entry.get()
-        root.destroy()
-        app = QApplication(sys.argv)
-        window = Window()
-        window.show()
-        sys.exit(app.exec())
+        s1 = 0
+        s2 = 0
+        while True:
+            sqlite_connection = sqlite3.connect('users.db')
+            cursor = sqlite_connection.cursor()
+            sql_select_query = """select * from users where login = ?"""
+            cursor.execute(sql_select_query, (login,))
+            records = cursor.fetchall()
+            for row in records:
+                username_in_db = row[1]
+                password_in_bd = row[2]
+            if len(records) == 0:
+                break
+            cursor.close()
+            sqlite_connection.close()
+            if (login == username_in_db and password == password_in_bd):
+                db = sqlite3.connect("users.db")
+                cursor = db.cursor()
+                query = "UPDATE users SET selected = 1 WHERE login = ?"
+                row = (login,)
+                cursor.execute(query, row)
+                db.commit()
+                root.destroy()
+                s1 = 1
+                app = QApplication(sys.argv)
+                window = Window()
+                window.show()
+                sys.exit(app.exec())
+            else:
+                s2 = 0
+        if (s1 == 0 and s2 ==0 ):
+            messagebox.showerror('Ошибка','Неправильный логин или пароль')
 
     root = tk.Tk()
     root.title('Вход')

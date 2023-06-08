@@ -1,9 +1,10 @@
+import sqlite3
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from enter import enter
+import re
 
 def reg():
-    
     def toggle_mode():
         if mode_switch.instate(["selected"]):
             style.theme_use("forest-light")
@@ -16,9 +17,83 @@ def reg():
         password = password_entry.get()
         age = int(age_spinbox.get())
         gender_status = "Man" if a.get() else "Woman"
-        print(name, login, password, age, gender_status)
-        root.destroy()
-        enter()
+        flag = 0
+        while True:
+            if (len(password)<3):
+                flag = -1
+                messagebox.showerror('Ошибка','B пароле должно быть не менее 3 трёх символов')
+                break
+            elif (len(password)>20):
+                flag = -1
+                messagebox.showerror('Ошибка','B пароле должно быть не более 20 символов')
+                break
+            elif not re.search("[a-z]", password):
+                flag = -1
+                messagebox.showerror('Ошибка','В пароле нет строчных латинских букв')
+                break
+            elif not re.search("[A-Z]", password):
+                flag = -1
+                messagebox.showerror('Ошибка','В пароле нет заглавных латинских букв')
+                break
+            elif not re.search("[0-9]", password):
+                flag = -1
+                messagebox.showerror('Ошибка','В пароле нет цифр')
+                break
+            elif re.search("\s" , password):
+                flag = -1
+                messagebox.showerror('Ошибка','В пароле есть пробел')
+                break
+            elif (len(login)<=2):
+                flag = -1
+                messagebox.showerror('Ошибка','B логине должно быть не менее 3 трёх символов')
+                break
+            elif (len(login)>=21):
+                flag = -1
+                messagebox.showerror('Ошибка','B логине должно быть не более 20 символов')
+                break
+            elif not re.search("[a-z]", login):
+                flag = -1
+                messagebox.showerror('Ошибка','В логине нет строчных латинских букв')
+                break
+            elif not re.search("[A-Z]", login):
+                flag = -1
+                messagebox.showerror('Ошибка','В логине нет заглавных латинских букв')
+                break
+            elif re.search("\s" , login):
+                flag = -1
+                messagebox.showerror('Ошибка','В логине не должно быть пробелов')
+                break
+            else:
+                while True:
+                    sqlite_connection = sqlite3.connect('users.db')
+                    cursor = sqlite_connection.cursor()
+                    sql_select_query = """select login from users where login = ?"""
+                    cursor.execute(sql_select_query, (login,))
+                    records = cursor.fetchall()
+                    for row in records:
+                        username_in_db = row[0]
+                        print(row[0])
+                    if len(records) == 0:
+                        break
+                    cursor.close()
+                    sqlite_connection.close()
+                    if (login == username_in_db):
+                        flag = -1
+                        messagebox.showerror('Ошибка','Такой логин уже занят')
+                        root.destroy()
+                        enter()
+            if (flag == 0):     
+                db = sqlite3.connect("users.db")
+                cursor = db.cursor()
+                query = "INSERT INTO users(login, password, name, age, gender, selected) VALUES (?,?,?,?,?,?)"
+                row = (login, password, name, age, gender_status, 0)
+                cursor.execute(query, row)
+                db.commit()
+                cursor.close()
+
+                root.destroy()
+                enter()
+                break
 
     root = tk.Tk()
     root.title('Регистрация')

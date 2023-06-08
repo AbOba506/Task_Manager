@@ -1,3 +1,4 @@
+import sqlite3
 import tkinter as tk
 from tkinter import ttk
 from reg import reg
@@ -16,6 +17,12 @@ def registration():
 def ent():
     root.destroy()
     enter()
+
+db = sqlite3.connect("users.db")
+cursor = db.cursor()
+query = "UPDATE users SET selected = 0 WHERE selected = 1"
+cursor.execute(query)
+db.commit()
 
 root = tk.Tk()
 root.title('Авторизация')
